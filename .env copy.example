@@ -1,0 +1,9 @@
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/sitepulse?schema=public"
+AUTH_SECRET="replace-with-a-long-random-secret"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+# Optional. If omitted, AI uses the built-in deterministic insight engine.
+OPENAI_API_KEY=""
+OPENAI_MODEL="gpt-4o-mini"
+# Optional admin account used by prisma/seed.ts
+ADMIN_EMAIL="admin@example.com"
+ADMIN_PASSWORD="ChangeMe123!"

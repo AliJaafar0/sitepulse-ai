@@ -1,0 +1,3 @@
+'use client';
+import {LineChart,Line,XAxis,YAxis,Tooltip,ResponsiveContainer,CartesianGrid} from 'recharts';
+export function ScoreChart({data}:{data:{date:string,score:number}[]}){if(data.length<2)return <div className="grid h-52 place-items-center text-sm text-gray-400">Run at least two scans to see score trends.</div>;return <div className="h-56 w-full"><ResponsiveContainer width="100%" height="100%"><LineChart data={data} margin={{top:10,right:10,left:-25,bottom:0}}><CartesianGrid strokeDasharray="3 3" vertical={false}/><XAxis dataKey="date" tick={{fontSize:11}}/><YAxis domain={[0,100]} tick={{fontSize:11}}/><Tooltip/><Line type="monotone" dataKey="score" stroke="#6d5dfc" strokeWidth={3} dot={{r:3}} activeDot={{r:5}}/></LineChart></ResponsiveContainer></div>}

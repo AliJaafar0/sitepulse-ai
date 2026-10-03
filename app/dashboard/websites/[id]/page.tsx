@@ -1,0 +1,2 @@
+import {notFound} from 'next/navigation';import {getCurrentUser} from '@/lib/auth';import {db} from '@/lib/db';import ReportClient from './ReportClient';
+export default async function WebsitePage({params}:{params:Promise<{id:string}>}){const u=await getCurrentUser();if(!u)notFound();const {id}=await params;const website=await db.website.findFirst({where:{id,userId:u.id},include:{scans:{orderBy:{createdAt:'desc'},take:30}}});if(!website)notFound();return <ReportClient website={JSON.parse(JSON.stringify(website))}/>}
