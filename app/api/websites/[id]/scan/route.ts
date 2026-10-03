@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { prisma } from '@/lib/prisma'; // عدّل مسار prisma إذا كان مختلفاً لديك
+import { prisma } from '@/lib/prisma';
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  props: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser();
@@ -12,9 +12,9 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id: websiteId } = await params;
+    const params = await props.params;
+    const websiteId = params.id;
 
-    // محاكاة درجات الفحص
     const performance = 100;
     const security = 100;
     const seo = 100;
@@ -35,7 +35,7 @@ export async function POST(
   } catch (error: any) {
     console.error('Scan error:', error);
     return NextResponse.json(
-      { error: 'Failed to create scan', details: error?.message },
+      { error: 'Failed to create scan', details: error?.message || 'Unknown error' },
       { status: 500 }
     );
   }
