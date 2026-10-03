@@ -1,41 +1,59 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { db } from '@/lib/db';
 
-export async function POST(
-  req: Request,
-  props: { params: Promise<{ id: string }> }
-) {
+export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const params = await props.params;
-    const websiteId = params.id;
+    const { scanId } = await req.json();
 
-    const performance = 100;
-    const security = 100;
-    const seo = 100;
-    const score = Math.round((performance + security + seo) / 3);
+    if (!scanId) {
+      return NextResponse.json(
+        { error: 'Scan ID is required' },
+        { status: 400 }
+      );
+    }
 
-    const scan = await prisma.scan.create({
-      data: {
-        websiteId,
-        status: 'completed',
-        score,
-        performance,
-        security,
-        seo,
-      },
+    // جلب بيانات الفحص بشكل آمن
+    const scan = await db.scan.findUnique({
+      where: { id: scanId },
     });
 
-    return NextResponse.json(scan);
+    if (!scan) {
+      return NextResponse.json(
+        { error: 'Scan record not found' },
+        { status: 404 }
+      );
+    }
+
+    // بناء خطة العمل والتوصيات استناداً لنتائج الفحص
+    const isHighHealth = (scan.score || 0) >= 80;
+
+    const summary = isHighHealth
+      ? 'الموقع يعمل بأداء ممتاز واستقرار عالٍ. الحفاظ على الممارسات الحالية سيعزز من استمرارية كفاءة الأداء وأمن البيانات.'
+      : 'يحتاج الموقع إلى بعض التحسينات للارتقاء بمستوى الأداء والأمان وتجربة المستخدم.';
+
+    const actions = isHighHealth
+      ? [
+          'تفعيل التخزين المؤقت (Caching) للوسائط والتصميم لزيادة سرعة التحميل.',
+          'التحقق من إعدادات التجديد التلقائي لشهادة الأمان SSL.',
+          'متابعة تحديثات الحزم والكتبات البرمجية المستخدمة دورياً.'
+        ]
+      : [
+          'معالجة الثغرات والتنبيهات الأمنية في الاستجابات.',
+          'ضغط الصور وتصغير حجم ملفات JavaScript لتحسين Performance.',
+          'إضافة الوسوم الوصفية (Meta Tags) الضرورية لتحسين SEO.'
+        ];
+
+    return NextResponse.json({ summary, actions });
   } catch (error: any) {
-    console.error('Scan error:', error);
+    console.error('AI API Error:', error);
     return NextResponse.json(
-      { error: 'Failed to create scan', details: error?.message || 'Unknown error' },
+      { error: 'Unable to generate insights.', details: error?.message },
       { status: 500 }
     );
   }
