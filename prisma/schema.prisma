@@ -33,9 +33,13 @@ model Website {
 }
 
 model Scan {
-  id        String   @id @default(cuid())
-  score     Int?
-  websiteId String
-  website   Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  websiteId   String
+  website     Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  status      String?  @default("completed")
+  score       Int?
+  performance Int?
+  security    Int?
+  seo         Int?
+  createdAt   DateTime @default(now())
 }
