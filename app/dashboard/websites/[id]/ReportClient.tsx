@@ -49,15 +49,27 @@ export default function ReportClient({ website }: { website: any }) {
     setBusy(false);
   }
 
-  async function insight() {
+async function insight() {
     if (!latest) return;
     setAi({ loading: true });
-    const r = await fetch('/api/ai', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ scanId: latest.id }),
-    });
-    setAi(await r.json());
+    try {
+      const r = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ scanId: latest.id }),
+      });
+      const data = await r.json();
+      if (!r.ok) {
+        alert(data.error || 'Failed to generate AI insights');
+        setAi(null); // إعادة إظهار الزر عند الفشل
+        return;
+      }
+      setAi({ ...data, loading: false });
+    } catch (err) {
+      console.error(err);
+      alert('Network error while fetching AI insights');
+      setAi(null); // إعادة إظهار الزر عند حدوث خطأ
+    }
   }
 
   async function remove() {
