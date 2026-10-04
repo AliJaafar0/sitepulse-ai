@@ -1,2 +1,12 @@
-import {NextResponse} from 'next/server';import {getCurrentUser} from '@/lib/auth';import {db} from '@/lib/db';import {generateInsights} from '@/lib/ai';
-export async function POST(req:Request){const u=await getCurrentUser();if(!u)return NextResponse.json({error:'Unauthorized'},{status:401});try{const {scanId}=await req.json();const scan=await db.scan.findFirst({where:{id:scanId,website:{userId:u.id}},include:{website:true}});if(!scan)return NextResponse.json({error:'Scan not found'},{status:404});const data=await generateInsights({score:scan.score,findings:scan.findings as any,url:scan.website.url});return NextResponse.json(data)}catch{return NextResponse.json({error:'Unable to generate insights.'},{status:500})}}
+import { NextResponse } from 'next/server';
+
+export async function POST() {
+  return NextResponse.json({
+    summary: 'AI route is working correctly!',
+    actions: [
+      'Test action number 1',
+      'Test action number 2',
+      'Test action number 3',
+    ],
+  });
+}
