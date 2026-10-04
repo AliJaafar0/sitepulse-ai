@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const score = 70;
+    const score = typeof scan.score === 'number' ? scan.score : 0;
 
     let summary: string;
     let actions: string[];
